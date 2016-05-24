@@ -28,6 +28,9 @@ class Client(etcd.Client):
     def __init__(self, config):
         super(Client, self).__init__(read_timeout=5)
         self._config = config
+        if 'protocol' in self._config:
+            self._protocol = self._config['protocol']
+
         self._load_machines_cache()
         self._allow_reconnect = True
 
