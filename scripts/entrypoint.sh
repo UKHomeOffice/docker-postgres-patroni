@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CONFIG_DIR=/var/lib/pgsql-conf
 DATA_DIR=${DATA_DIR:-/var/lib/pgsql}
@@ -22,8 +24,14 @@ function get_config() {
 }
 
 if [ "$(whoami)" != "${PGUSER}" ]; then
+  # Steps to carry out before switching to un-privileged user
+
   echo "Fixing permissions..."
-  /scripts/fix-permissions ${DATA_DIR}
+  /scripts/fix-permissions.sh ${DATA_DIR}
+
+  echo "Adding CA..."
+  /scripts/add_ca.sh
+
   echo "Switching user..."
   su ${PGUSER} --preserve-environment -c "${BASH_SOURCE[0]} $@"
   exit $?
@@ -46,8 +54,6 @@ else
   DOCKER_IP=$($POD_IP)
   HNAME=$($POD_NAME)
 fi
-
-/scripts/add_ca.sh
 
 NODE=${HNAME//[^a-z0-9]/_}
 
@@ -77,7 +83,7 @@ postgresql:
   scope: *scope
   listen: 0.0.0.0:5432
   connect_address: ${DOCKER_IP}:5432
-  data_dir: /var/lib/pgsql
+  data_dir: ${DATA_DIR}
   maximum_lag_on_failover: 104857600 # 100 megabyte in bytes
   use_slots: True
   pgpass: /tmp/pgpass0
