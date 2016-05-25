@@ -4,6 +4,7 @@ SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 CONFIG_DIR=/var/lib/pgsql-conf
 DATA_DIR=${DATA_DIR:-/var/lib/pgsql}
 ETCD_PROTOCOL=${ETCD_PROTOCOL:-http}
+ETCD_PORT=${ETCD_PORT:-2379}
 
 function get_config() {
 
@@ -46,6 +47,8 @@ else
   HNAME=$($POD_NAME)
 fi
 
+/scripts/add_ca.sh
+
 NODE=${HNAME//[^a-z0-9]/_}
 
 # create patroni config
@@ -63,7 +66,7 @@ restapi:
 etcd:
   scope: *scope
   ttl: *ttl
-  host: ${ETCD}:2379
+  host: ${ETCD}:${ETCD_PORT}
   protocol: ${ETCD_PROTOCOL}
 tags:
   nofailover: False

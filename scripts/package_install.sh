@@ -39,6 +39,9 @@ ln -s /usr/pgsql-9.5/bin/pg_controldata /usr/bin/
 yum -y -q install python-pip
 yum -y -q install python-devel
 
+# install cert management:
+yum -y -q install ca-certificates
+
 # install WAL-E
 # pip install -U six
 # pip install -U requests
