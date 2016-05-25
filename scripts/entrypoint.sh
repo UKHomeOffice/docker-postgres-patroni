@@ -93,9 +93,9 @@ postgresql:
   create_replica_methods:
     - basebackup
   pg_hba:
-  - local all all  trust
   - host all all 0.0.0.0/0 md5
   - hostssl all all 0.0.0.0/0 md5
+  - host replication replicator ${DOCKER_IP}/16    md5
   replication:
     username: ${ADMINUSER}
     password: ${ADMINPASS}
@@ -111,7 +111,9 @@ postgresql:
     password: ${ADMINPASS}
   parameters:
     archive_mode: "off"
-    archive_command: mkdir -p ../wal_archive && cp %p ../wal_archive/%f
+    archive_command: 'true'
+    listen_addresses: 0.0.0.0
+#    archive_command: mkdir -p ../wal_archive && cp %p ../wal_archive/%f
     wal_level: hot_standby
     max_wal_senders: 10
     hot_standby: "on"
