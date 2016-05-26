@@ -3,8 +3,8 @@
 set -e
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-SECRETS_DIR=/var/lib/pgsql/secrets
-DATA_DIR=${DATA_DIR:-/var/lib/pgsql/data}
+DATA_DIR=${DATA_DIR:-/var/lib/pgsql}
+SECRETS_DIR=${SECRETS_DIR:-/etc/pgsql/secrets}
 ETCD_PROTOCOL=${ETCD_PROTOCOL:-http}
 ETCD_PORT=${ETCD_PORT:-2379}
 
@@ -26,8 +26,9 @@ function get_config() {
 if [ "$(whoami)" != "${PGUSER}" ]; then
   # Steps to carry out before switching to un-privileged user
 
+  mkdir -p "${DATA_DIR}"
   echo "Fixing permissions..."
-  /scripts/fix-permissions.sh ${DATA_DIR}
+  /scripts/fix-permissions.sh "${DATA_DIR}"
 
   echo "Adding CA..."
   /scripts/add_ca.sh
@@ -83,7 +84,7 @@ postgresql:
   scope: *scope
   listen: 0.0.0.0:5432
   connect_address: ${DOCKER_IP}:5432
-  data_dir: ${DATA_DIR}
+  data_dir: ${DATA_DIR}/data
   maximum_lag_on_failover: 104857600 # 100 megabyte in bytes
   use_slots: True
   pgpass: /tmp/pgpass0
