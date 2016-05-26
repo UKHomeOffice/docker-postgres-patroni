@@ -95,7 +95,6 @@ postgresql:
   - basebackup
   pg_hba:
   - host all all 0.0.0.0/0 trust
-  - # hostssl all all 0.0.0.0/0 trust
   - host replication ${ADMINUSER} ${DOCKER_IP}/16    md5
   replication:
     username: ${ADMINUSER}
