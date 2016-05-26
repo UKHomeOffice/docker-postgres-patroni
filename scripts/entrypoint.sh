@@ -3,15 +3,15 @@
 set -e
 
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-CONFIG_DIR=/var/lib/pgsql-conf
-DATA_DIR=${DATA_DIR:-/var/lib/pgsql}
+SECRETS_DIR=/var/lib/pgsql/secrets
+DATA_DIR=${DATA_DIR:-/var/lib/pgsql/data}
 ETCD_PROTOCOL=${ETCD_PROTOCOL:-http}
 ETCD_PORT=${ETCD_PORT:-2379}
 
 function get_config() {
 
   conf_name="${1}"
-  conf_file="${CONFIG_DIR}/${conf_name}"
+  conf_file="${SECRETS_DIR}/${conf_name}"
   if [ -f ${conf_file} ]; then
     echo "Using config from ${conf_file}"
     value="$(cat ${conf_file})"
@@ -39,7 +39,7 @@ else
   echo "Running as $(whoami)"
 fi
 
-for file in ${CONFIG_DIR}/* ; do
+for file in ${SECRETS_DIR}/* ; do
   get_config $(basename ${file})
 done
 

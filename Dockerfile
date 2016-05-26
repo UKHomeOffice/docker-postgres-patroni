@@ -4,7 +4,7 @@
 
 FROM ukhomeofficedigital/centos-base
 
-ENV DATA_DIR=/var/lib/pgsql \
+ENV DATA_DIR=/var/lib/pgsql/data \
     PGUSER=postgres
 
 ADD ./scripts/ /scripts/
@@ -17,4 +17,3 @@ RUN /scripts/file_setup.sh
 EXPOSE 8001 5432
 
 ENTRYPOINT ["/bin/bash", "/scripts/entrypoint.sh"]
-#USER postgres
